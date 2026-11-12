@@ -81,3 +81,37 @@ class BanglaStemmer:
 
     def stem(self, word: str) -> str:
         return str(self.analyze(word)["root"])
+
+
+_BASE_NLP = "https://mohammadgolamrabbii.github.io/Open-Bangla-NLP-Suite"
+_BASE_LEX = "https://mohammadgolamrabbii.github.io/Bangla-Lexicon-Mega-Archive"
+
+
+def load_bangla_lexicon(url: str = f"{_BASE_LEX}/dist/bangla_wordlist_verified.txt") -> Set[str]:
+    """Fetch the 587,464-word verified Canonical NFC Bangla wordlist from GitHub Pages."""
+    import urllib.request
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        text = resp.read().decode("utf-8")
+    return {line.strip() for line in text.splitlines() if line.strip()}
+
+
+def load_idioms(url: str = f"{_BASE_NLP}/dist/idioms-proverbs/idioms_proverbs.json") -> List[Dict[str, object]]:
+    """Fetch 5,445+ Bangla idioms & proverbs JSON from Open-Bangla-NLP-Suite."""
+    import json
+    import urllib.request
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def load_etymology(url: str = f"{_BASE_NLP}/dist/etymology/bangla_etymology.json") -> List[Dict[str, object]]:
+    """Fetch 6,101 origin-tagged Bangla etymology entries."""
+    import json
+    import urllib.request
+    with urllib.request.urlopen(url, timeout=30) as resp:
+        return json.loads(resp.read().decode("utf-8"))
+
+
+def create_stemmer_with_lexicon() -> "BanglaStemmer":
+    """Return a BanglaStemmer grounded with the live 587k Bangla Lexicon."""
+    return BanglaStemmer(load_bangla_lexicon())
+
