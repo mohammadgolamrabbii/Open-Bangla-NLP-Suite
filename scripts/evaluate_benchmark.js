@@ -31,5 +31,5 @@ for (const t of bench) {
 console.log(`Bangla-Eval-Suite Baseline Self-Check:`);
 console.log(`- Orthography NFC (@open-bangla/normalizer): ${orthPass}/${orthTotal} (${((orthPass / orthTotal) * 100).toFixed(1)}%)`);
 console.log(`- Morphology Stem/Lemma (@open-bangla/stemmer standalone): ${morphStandalonePass}/${morphTotal} (${((morphStandalonePass / morphTotal) * 100).toFixed(1)}%)`);
-console.log(`- Morphology Stem/Lemma (@open-bangla/stemmer + 495k lexicon): ${morphLexPass}/${morphTotal} (${((morphLexPass / morphTotal) * 100).toFixed(1)}%)`);
+console.log(`- Morphology Stem/Lemma (@open-bangla/stemmer + 587k lexicon): ${morphLexPass}/${morphTotal} (${((morphLexPass / morphTotal) * 100).toFixed(1)}%)`);
 console.log(`- Total Eval Tasks Available for LLM Evaluation: ${bench.length}`);
