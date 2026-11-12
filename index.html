@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Open Bangla NLP & AI Suite — Morphology, Idioms, Etymology, Synthetic OCR & LLM Eval</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;600;700&family=Atma:wght@400;600&family=Baloo+Da+2:wght@500;700&family=Galada&family=Hind+Siliguri:wght@400;600;700&family=Mina:wght@400;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;700&family=Tiro+Bangla&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans Bengali', 'Hind Siliguri', system-ui, sans-serif; }
+    .tab-btn.active { background: linear-gradient(135deg, #10b981, #06b6d4); color: #020617; font-weight: 800; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-emerald-500 selection:text-slate-950">
+
+  <!-- HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/95 sticky top-0 z-40 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🧠</span>
+        <div>
+          <h1 class="font-black text-lg sm:text-xl text-white tracking-tight flex items-center gap-2 flex-wrap">
+            Open Bangla NLP &amp; AI Suite
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase font-bold">GPL-3.0 • Zero-Backend</span>
+          </h1>
+          <p class="text-xs text-slate-400">শব্দমূল বিশ্লেষক • বাগধারা-প্রবাদ • উৎপত্তি মানচিত্র • Synthetic OCR • LLM Benchmark • SDKs</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-bold flex-wrap">
+        <a href="https://github.com/mohammadgolamrabbii/Open-Bangla-NLP-Suite" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition">🐙 GitHub Repo</a>
+        <a href="https://mohammadgolamrabbii.github.io/Bangla-Lexicon-Mega-Archive/" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition">🇧🇩 495k Lexicon</a>
+        <a href="https://mohammadgolamrabbii.github.io/Bangla-Hindi-Bilingual-Bridge/" target="_blank" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white transition">🌉 Bilingual Bridge</a>
+        <a href="https://mohammadgolamrabbii.github.io/typography/" target="_blank" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition">🔤 5,020+ Bangla Fonts</a>
+      </div>
+    </div>
+
+    <!-- NAVIGATION TABS -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-2.5 flex items-center gap-1.5 overflow-x-auto text-xs">
+      <button onclick="switchTab('morph')" id="tab-morph" class="tab-btn active px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">🔬 শব্দমূল ও ইউনিকোড ডক্টর</button>
+      <button onclick="switchTab('idioms')" id="tab-idioms" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">📚 বাগধারা, প্রবাদ ও কুইজ</button>
+      <button onclick="switchTab('etym')" id="tab-etym" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">🧭 শব্দ-উৎপত্তি মানচিত্র</button>
+      <button onclick="switchTab('ocr')" id="tab-ocr" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">🖼️ Synthetic OCR জেনারেটর</button>
+      <button onclick="switchTab('eval')" id="tab-eval" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">🤖 Bangla LLM Benchmark</button>
+      <button onclick="switchTab('sdk')" id="tab-sdk" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-slate-300 hover:text-white whitespace-nowrap transition">📦 npm / Python / HF SDK</button>
+      <button onclick="switchTab('contribute')" id="tab-contribute" class="tab-btn px-3 py-1.5 rounded-lg bg-slate-900 text-amber-300 hover:text-white border border-amber-500/30 whitespace-nowrap transition">✍️ নো-কোড শব্দ জমা</button>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- STATS RIBBON -->
+    <div id="stats-ribbon" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">বিভক্তিযুক্ত শব্দ বিশ্লেষণ</div>
+        <div id="stat-morph-words" class="text-lg font-black text-emerald-400">—</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">মূল শব্দ পরিবার (Roots)</div>
+        <div id="stat-morph-roots" class="text-lg font-black text-cyan-400">—</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">বাগধারা ও প্রবাদ</div>
+        <div id="stat-idioms" class="text-lg font-black text-amber-400">—</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">ব্যুৎপত্তি-ট্যাগড শব্দ</div>
+        <div id="stat-etym" class="text-lg font-black text-indigo-400">—</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">OCR যুক্তাক্ষর ও শব্দ</div>
+        <div id="stat-ocr" class="text-lg font-black text-pink-400">—</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3">
+        <div class="text-[11px] text-slate-400">LLM Benchmark টাস্ক</div>
+        <div id="stat-eval" class="text-lg font-black text-teal-400">—</div>
+      </div>
+    </div>
+
+    <!-- ==================== TAB 1: MORPHOLOGY & UNICODE DOCTOR ==================== -->
+    <section id="panel-morph" class="space-y-6">
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h2 class="text-lg font-black text-white">🔬 লাইভ শব্দমূল ও বিভক্তি বিশ্লেষক (Bangla Lemmatizer)</h2>
+          <p class="text-xs text-slate-400">যেকোনো বাংলা বাক্য বা শব্দ লিখুন — মূল ধাতু/শব্দ (Root/Lemma), উপসর্গ ও বিভক্তি-প্রত্যয় আলাদা করে দেখাবে।</p>
+          <textarea id="morph-input" rows="3" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-emerald-500 outline-none">মানুষদেরকে বইগুলোরই প্রকৃত জ্ঞান অর্জন করতে বলেছিলেন এবং গিয়েছিল স্কুলে।</textarea>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="runLiveMorphology()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">⚡ বিশ্লেষণ করুন</button>
+            <button onclick="document.getElementById('morph-input').value='কবিতার বইগুলোতেই বাংলাদেশের অজ্ঞানতা দূর করার আলোকবর্তিকা রয়েছে।'; runLiveMorphology();" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition">নমুনা বাক্য</button>
+          </div>
+          <div id="morph-output" class="space-y-2 max-h-80 overflow-y-auto pr-1"></div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h2 class="text-lg font-black text-white">🩺 Bijoy ↔ Canonical NFC Unicode ডক্টর</h2>
+          <p class="text-xs text-slate-400">পুরোনো বিজয় (SutonnyMJ) টেক্সট বা ভাঙা নুকতা (`য়`, `ড়`, `ঢ়` ডিকম্পোজড) ঠিক করে প্রমিত NFC ইউনিকোডে রূপান্তর করুন।</p>
+          <textarea id="doctor-input" rows="3" placeholder="বিজয় ANSI (যেমন: evsjv আমার সোনার বাংলা) অথবা ভাঙা ইউনিকোড দিন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-sm text-white focus:border-cyan-500 outline-none">Avwg evsjvq গান গাই এবং আমা&#x09AF;&#x09BC; ভালোবাসি।</textarea>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="runUnicodeDoctor('bijoy')" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition">🔄 Bijoy → Unicode + NFC Fix</button>
+            <button onclick="runUnicodeDoctor('nfc')" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">✨ শুধু NFC Canonicalize</button>
+          </div>
+          <div id="doctor-output" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-emerald-300 min-h-[76px]"></div>
+        </div>
+      </div>
+
+      <!-- Root Family Explorer -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="text-base font-black text-white">🌳 মূল শব্দ ও রূপান্তর পরিবার (30,752 Root Families Dataset)</h3>
+            <p class="text-xs text-slate-400">একটি মূল শব্দ থেকে ৪.৯৫ লক্ষ শব্দভাণ্ডারে কী কী বিভক্তিযুক্ত রূপ পাওয়া গেছে তা খুঁজুন।</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input id="root-search" oninput="renderRootFamilies()" placeholder="মূল শব্দ খুঁজুন (যেমন: মানব, বাংলা)..." class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white outline-none w-56">
+            <a href="dist/morphology/bangla_root_families.jsonl" download class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold border border-slate-700">⬇ JSONL (15.5 MB)</a>
+          </div>
+        </div>
+        <div id="root-families-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: IDIOMS, PROVERBS & QUIZ ==================== -->
+    <section id="panel-idioms" class="hidden space-y-6">
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <h2 class="text-lg font-black text-white">📚 বাগধারা, প্রবাদ-প্রবচন ও বাক্যাংশ (5,445 এন্ট্রি)</h2>
+            <div class="flex gap-2 text-xs">
+              <a href="dist/idioms-proverbs/idioms_proverbs.json" download class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700">JSON</a>
+              <a href="dist/idioms-proverbs/idioms_proverbs.csv" download class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700">CSV</a>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <input id="idiom-search" oninput="renderIdioms()" placeholder="বাগধারা বা অর্থ লিখুন (যেমন: অগস্ত্য, অন্ধকার, ডুমুরের)..." class="flex-1 min-w-[200px] bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            <select id="idiom-type" onchange="renderIdioms()" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+              <option value="all">সকল ধরন</option>
+              <option value="idiom">বাগধারা (Idiom)</option>
+              <option value="proverb">প্রবাদ (Proverb)</option>
+              <option value="phrase">বাক্যাংশ (Phrase)</option>
+            </select>
+          </div>
+          <div id="idioms-list" class="space-y-2.5 max-h-[540px] overflow-y-auto pr-1"></div>
+        </div>
+
+        <!-- Interactive BCS / Admission Quiz + Homophones -->
+        <div class="space-y-5">
+          <div class="bg-gradient-to-br from-slate-900 to-indigo-950/50 border border-indigo-500/30 rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-base font-black text-white">🎯 বাংলা ব্যাকরণ কুইজ</h3>
+              <span id="quiz-score" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">স্কোর: ০/০</span>
+            </div>
+            <p id="quiz-question" class="text-sm text-slate-200 font-semibold leading-relaxed">লোড হচ্ছে...</p>
+            <div id="quiz-options" class="space-y-2"></div>
+            <div id="quiz-feedback" class="text-xs min-h-[20px]"></div>
+            <button onclick="nextQuizQuestion()" class="w-full py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">পরবর্তী প্রশ্ন →</button>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <h3 class="text-base font-black text-white">🔁 সমোচ্চারিত ভিন্নার্থক শব্দ (৩৬ জোড়া)</h3>
+            <div id="homophones-list" class="space-y-2 max-h-72 overflow-y-auto pr-1 text-xs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: ETYMOLOGY ORIGIN MAP ==================== -->
+    <section id="panel-etym" class="hidden space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-black text-white">🧭 বাংলা শব্দ-উৎপত্তি ও আগন্তুক শব্দ মানচিত্র (6,101 শব্দ)</h2>
+            <p class="text-xs text-slate-400">তৎসম (সংস্কৃত), প্রাকৃত/তদ্ভব, আরবি, ফারসি, ইংরেজি, পর্তুগিজ ও হিন্দি/উর্দু উৎসের শব্দ ও সহোদর হিন্দি কগনেট খুঁজুন।</p>
+          </div>
+          <div class="flex gap-2 text-xs">
+            <a href="dist/etymology/bangla_etymology.json" download class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700">JSON</a>
+            <a href="dist/etymology/bangla_etymology.csv" download class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700">CSV</a>
+          </div>
+        </div>
+        <div id="etym-filter-pills" class="flex flex-wrap gap-2 text-xs"></div>
+        <input id="etym-search" oninput="renderEtymology()" placeholder="শব্দ, ইংরেজি অর্থ বা হিন্দি কগনেট খুঁজুন..." class="w-full sm:w-96 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <div id="etym-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[540px] overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: SYNTHETIC OCR GENERATOR STUDIO ==================== -->
+    <section id="panel-ocr" class="hidden space-y-5">
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+          <h2 class="text-lg font-black text-white">🖼️ Synthetic Bangla OCR ডেটাসেট জেনারেটর</h2>
+          <p class="text-xs text-slate-400">৯টি ওয়েব ফন্ট + আপনার নিজের `.ttf/.otf` ফন্ট এবং ১৬০টি যুক্তাক্ষর / ৫,০০০ যাচাইকৃত বাংলা শব্দ ব্যবহার করে Tesseract/PaddleOCR/TrOCR ট্রেইনিং ইমেজ + `labels.tsv` ZIP জেনারেট করুন।</p>
+
+          <div class="space-y-2.5 text-xs">
+            <div>
+              <label class="text-slate-400 block mb-1">ডেটা উৎস (Corpus Source)</label>
+              <select id="ocr-source" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                <option value="words">৫,০০০ যাচাইকৃত বাংলা শব্দ</option>
+                <option value="conjuncts">১৬০টি জটিল যুক্তাক্ষর (Conjuncts)</option>
+                <option value="pangrams">পূর্ণ বাংলা বাক্য ও প্যানগ্রাম</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-slate-400 block mb-1">নমুনার সংখ্যা</label>
+                <input id="ocr-count" type="number" min="5" max="300" value="30" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">ফন্ট সাইজ (px)</label>
+                <input id="ocr-size" type="number" min="20" max="72" value="38" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-slate-400 block mb-1">সর্বোচ্চ ঘূর্ণন (±deg)</label>
+                <input id="ocr-rot" type="number" min="0" max="15" value="4" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+              </div>
+              <div>
+                <label class="text-slate-400 block mb-1">নয়েজ / ব্লার মাত্রা</label>
+                <select id="ocr-noise" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-white">
+                  <option value="low">কম (Clean Scan)</option>
+                  <option value="med" selected>মাঝারি (Paper Grain)</option>
+                  <option value="high">বেশি (Old Print)</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="text-slate-400 block mb-1">কাস্টম বাংলা ফন্ট যোগ করুন (.ttf/.otf/.woff2)</label>
+              <input id="ocr-custom-font" type="file" accept=".ttf,.otf,.woff,.woff2" multiple onchange="loadCustomOcrFonts(event)" class="w-full text-[11px] text-slate-300 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white file:font-bold">
+              <div id="ocr-font-status" class="text-[11px] text-emerald-400 mt-1">৯টি Google Bangla ওপেন ফন্ট সক্রিয় আছে।</div>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-2 pt-2">
+            <button onclick="renderOcrPreviewGrid()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition">🎲 নমুনা প্রিভিউ জেনারেট করুন</button>
+            <button onclick="downloadOcrZip()" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">📦 ZIP ডাউনলোড (`images/*.png` + `labels.tsv`)</button>
+          </div>
+          <div id="ocr-progress" class="text-[11px] text-cyan-300"></div>
+        </div>
+
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h3 class="text-base font-black text-white">লাইভ সিন্থেটিক OCR স্যাম্পল প্রিভিউ</h3>
+          <div id="ocr-preview-grid" class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[560px] overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 5: BANGLA LLM BENCHMARK ==================== -->
+    <section id="panel-eval" class="hidden space-y-5">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-lg font-black text-white">🤖 Bangla-Eval-Suite (460-Task Open LLM Benchmark)</h2>
+            <p class="text-xs text-slate-400">AI মডেলগুলো (GPT, Gemini, Claude, Llama) বাংলা ইউনিকোড, শব্দমূল, বাগধারা, সমোচ্চারিত শব্দ এবং বাংলা–হিন্দি কগনেটে কতটা নির্ভুল তা যাচাইয়ের মানদণ্ড।</p>
+          </div>
+          <div class="flex gap-2 text-xs">
+            <a href="dist/eval-suite/bangla_eval_benchmark.jsonl" download class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold">⬇ Download Full JSONL</a>
+            <button onclick="copyEvalPrompts()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold">📋 ১০টি প্রম্পট কপি করুন</button>
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-2.5 text-xs">
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-slate-400">১. Orthography NFC</div>
+            <div class="font-bold text-white">১০০ টাস্ক • Normalizer: ১০০%</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-slate-400">২. Morphology Lemma</div>
+            <div class="font-bold text-white">১০০ টাস্ক • Lexicon+Stemmer: ১০০%</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-slate-400">৩. Idioms &amp; Proverbs</div>
+            <div class="font-bold text-white">১০০ টাস্ক • Wiktionary QA</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-slate-400">৪. Homophones &amp; 1-Word</div>
+            <div class="font-bold text-white">৬০ টাস্ক • BCS Grade</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3">
+            <div class="text-slate-400">৫. Bangla-Hindi Bridge</div>
+            <div class="font-bold text-white">১০০ টাস্ক • Cognates</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2">
+          <select id="eval-cat" onchange="renderEvalTasks()" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white outline-none">
+            <option value="all">সকল ক্যাটাগরি (৪৬০)</option>
+            <option value="orthography_nfc">Orthography &amp; NFC (১০০)</option>
+            <option value="morphology_lemma">Morphology &amp; Lemma (১০০)</option>
+            <option value="idioms_proverbs">Idioms &amp; Proverbs (১০০)</option>
+            <option value="homophones_grammar">Homophones &amp; One-Word (৬০)</option>
+            <option value="bilingual_cognates">Bangla-Hindi Cognates (১০০)</option>
+          </select>
+          <span id="eval-copy-msg" class="text-xs text-emerald-400 self-center"></span>
+        </div>
+        <div id="eval-list" class="space-y-2.5 max-h-[500px] overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 6: DEVELOPER SDKs & HUGGING FACE ==================== -->
+    <section id="panel-sdk" class="hidden space-y-5">
+      <div class="grid md:grid-cols-2 gap-5">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h2 class="text-lg font-black text-white">📦 Node.js / JavaScript SDKs</h2>
+          <p class="text-xs text-slate-400">GitHub রিপো থেকে সরাসরি ব্যবহার বা `npm publish`-এর জন্য সম্পূর্ণ প্রস্তুত প্যাকেজসমূহ:</p>
+          <pre class="mono text-[11px] bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-emerald-300 overflow-x-auto">// ১. @open-bangla/normalizer
+const { toBanglaCanonical, bijoyToUnicode } = require('@open-bangla/normalizer');
+console.log(toBanglaCanonical("আমা\u09AF\u09BC")); // "আমায়" (Canonical NFC)
+console.log(bijoyToUnicode("Avwg evsjv"));     // "আমি বাংলা"
+
+// ২. @open-bangla/stemmer
+const { BanglaMorphAnalyzer } = require('@open-bangla/stemmer');
+const analyzer = new BanglaMorphAnalyzer();
+console.log(analyzer.analyze("বইগুলোরই"));
+// => { word: "বইগুলোরই", root: "বই", lemma: "বই", suffixes: [...] }
+
+// ৩. @open-bangla/lexicon-core
+const { BanglaLexiconIndex } = require('@open-bangla/lexicon-core');
+const idx = new BanglaLexiconIndex(wordArray);
+console.log(idx.suggest("আসির্বাদ")); // ["আশীর্বাদ"]</pre>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+          <h2 class="text-lg font-black text-white">🐍 Python প্যাকেজ ও Hugging Face মিরর</h2>
+          <p class="text-xs text-slate-400">`packages/python/pyproject.toml` ও `huggingface/push_datasets.py` ব্যবহার করে PyPI এবং Hugging Face Hub-এ এক কমান্ডে ডিপ্লয় করুন:</p>
+          <pre class="mono text-[11px] bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-cyan-300 overflow-x-auto"># Python লোড ও ব্যবহার (packages/python)
+from open_bangla_nlp import to_bangla_canonical, BanglaStemmer
+stemmer = BanglaStemmer()
+print(stemmer.analyze("পড়াবেন"))
+
+# Hugging Face Hub-এ ৪টি ডেটাসেট মিরর আপলোড
+pip install huggingface_hub
+huggingface-cli login
+python huggingface/push_datasets.py --username mohammadgolamrabbii</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 7: NO-CODE CONTRIBUTION PORTAL (#9) ==================== -->
+    <section id="panel-contribute" class="hidden space-y-5">
+      <div class="bg-slate-900 border border-amber-500/30 rounded-2xl p-6 max-w-3xl mx-auto space-y-4">
+        <div>
+          <span class="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold uppercase">No-Code Community Portal</span>
+          <h2 class="text-xl font-black text-white mt-1.5">✍️ কোড ছাড়াই নতুন বাংলা শব্দ, বাগধারা বা সংশোধন জমা দিন</h2>
+          <p class="text-xs text-slate-400">গিটহাব Pull Request জানার প্রয়োজন নেই! নিচের ফর্মটি পূরণ করে বাটনে ক্লিক করলেই অটোমেটিক ভেরিফায়েড GitHub Issue টেমপ্লেট তৈরি হয়ে ওপেন হবে।</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3 text-xs">
+          <div>
+            <label class="text-slate-300 font-bold block mb-1">কোন রিপোতে যোগ করবেন?</label>
+            <select id="contrib-repo" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+              <option value="Bangla-Lexicon-Mega-Archive">🇧🇩 Bangla Lexicon (নতুন শব্দ / বানান ঠিক)</option>
+              <option value="Open-Bangla-NLP-Suite">🧠 NLP Suite (বাগধারা / প্রবাদ / উৎপত্তি / বিভক্তি)</option>
+              <option value="Bangla-Hindi-Bilingual-Bridge">🌉 Bilingual Bridge (বাংলা–হিন্দি শব্দজোড়)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-slate-300 font-bold block mb-1">ধরন (Entry Type)</label>
+            <select id="contrib-kind" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white">
+              <option value="নতুন শব্দ / অর্থ">নতুন বাংলা শব্দ বা অর্থ</option>
+              <option value="বাগধারা / প্রবাদ">বাগধারা / প্রবাদ-প্রবচন</option>
+              <option value="শব্দের উৎপত্তি (Etymology)">শব্দের উৎপত্তি (তৎসম/আরবি/ফারসি...)</option>
+              <option value="বানান বা ডেটা সংশোধন">বানান / বিভক্তি / অর্থ সংশোধন</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="text-slate-300 font-bold block mb-1">বাংলা শব্দ / বাগধারা *</label>
+            <input id="contrib-term" type="text" placeholder="যেমন: অপরাজিতা / ডুমুরের ফুল" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-amber-400">
+          </div>
+          <div>
+            <label class="text-slate-300 font-bold block mb-1">সঠিক অর্থ / ইংরেজি / হিন্দি সমার্থক (ঐচ্ছিক)</label>
+            <textarea id="contrib-meaning" rows="2" placeholder="অর্থ বা উদাহরণ বাক্য লিখুন..." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-amber-400"></textarea>
+          </div>
+          <div>
+            <label class="text-slate-300 font-bold block mb-1">তথ্যসূত্র (বাংলা একাডেমি / উইকিশনারি / গ্রন্থ)</label>
+            <input id="contrib-source" type="text" placeholder="যেমন: বাংলা একাডেমি আধুনিক বাংলা অভিধান" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-white outline-none focus:border-amber-400">
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 pt-2">
+          <button onclick="submitNoCodeIssue()" class="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition shadow-lg">🚀 GitHub Issue-তে সরাসরি জমা দিন →</button>
+          <button onclick="copyContributionMarkdown()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700 transition">📋 Markdown কপি করুন</button>
+          <span id="contrib-status" class="text-xs text-emerald-400"></span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500 mt-10">
+    <p>Open Bangla NLP &amp; AI Suite • Curated by Mohammad Golamrabbii • Licensed under GNU GPL-3.0 &amp; Wiktionary CC BY-SA 4.0</p>
+  </footer>
+
+<script>
+// ========== CANONICAL NORMALIZER & INLINE MORPH ANALYZER ==========
+function toBanglaCanonical(str) {
+  if (!str) return "";
+  return String(str)
+    .normalize("NFC")
+    .replace(/\u09AF\u09BC/g, "\u09DF")
+    .replace(/\u09A1\u09BC/g, "\u09DC")
+    .replace(/\u09A2\u09BC/g, "\u09DD")
+    .replace(/[\u200B\uFEFF]/g, "")
+    .replace(/\u09C7\u09BE/g, "\u09CB")
+    .replace(/\u09C7\u09D7/g, "\u09CC")
+    .trim();
+}
+
+const BIJOY_MAP = {
+  "Av":"আ","A":"অ","B":"ই","C":"ঈ","D":"উ","E":"ঊ","F":"ঋ","G":"এ","H":"ঐ","I":"ও","J":"ঔ",
+  "K":"ক","L":"খ","M":"গ","N":"ঘ","O":"ঙ","P":"চ","Q":"ছ","R":"জ","S":"ঝ","T":"ঞ",
+  "U":"ট","V":"ঠ","W":"ড","X":"ঢ","Y":"ণ","Z":"ত","_":"থ","`":"দ","a":"ধ","b":"ন",
+  "c":"প","d":"ফ","e":"ব","f":"ভ","g":"ম","h":"য","i":"র","j":"ল","k":"শ","l":"ষ",
+  "m":"স","n":"হ","o":"ড়","p":"ঢ়","q":"য়","r":"ৎ","s":"ং","t":"ঃ","u":"ঁ",
+  "0":"০","1":"১","2":"২","3":"৩","4":"৪","5":"৫","6":"৬","7":"৭","8":"৮","9":"৯",
+  "v":"া","w":"ি","x":"ী","y":"ু","z":"ু","~":"ূ","„":"ৃ","‡":"ে","†":"ে","‰":"ৈ","Š":"ৗ",
+  "|":"।","¥":"৳","Ö":"্র","ª":"্র","¨":"্য","&":"্","©":"র্"
+};
+function bijoyToUnicode(ansi) {
+  let raw = String(ansi || "").replace(/Av/g, "আ");
+  let out = "";
+  for (const ch of raw) out += BIJOY_MAP[ch] !== undefined ? BIJOY_MAP[ch] : ch;
+  const chars = Array.from(out);
+  const pre = new Set(["ি", "ে", "ৈ"]);
+  const cons = /[\u0995-\u09B9\u09DC\u09DD\u09DF]/;
+  for (let i = 0; i < chars.length - 1; i++) {
+    if (pre.has(chars[i]) && cons.test(chars[i + 1])) {
+      const k = chars[i];
+      let j = i + 1;
+      while (j + 2 < chars.length && chars[j + 1] === "\u09CD" && cons.test(chars[j + 2])) j += 2;
+      chars.splice(i, 1); chars.splice(j, 0, k); i = j;
+    }
+  }
+  return toBanglaCanonical(chars.join("").replace(/\u09C7([^\u0995-\u09B9\u09CD]*)\u09BE/g, "$1\u09CB"));
+}
+
+const IRR_VERBS = { "গি":"যাওয়া","গে":"যাওয়া","গ":"যাওয়া","দি":"দেওয়া","দে":"দেওয়া","দ":"দেওয়া","নি":"নেওয়া","নে":"নেওয়া","ন":"নেওয়া","কর":"করা","পড়":"পড়া","লিখ":"লেখা","বল":"বলা","দেখ":"দেখা","হ":"হওয়া" };
+const VERB_SUF = ["ইতেছিলেন","ইতেছিলাম","ইতেছিল","ইতেছেন","ইতেছি","ইতেছে","িয়েছিলেন","িয়েছিলাম","িয়েছিল","িয়েছেন","িয়েছি","িয়েছে","য়েছিলেন","য়েছিলাম","য়েছিল","য়েছেন","য়েছি","য়েছে","েছিলেন","েছিলাম","েছিল","েছেন","েছি","েছে","ছিলেন","ছিলাম","ছিল","ছেন","ছি","ছে","বেন","বে","বো","তাম","তেন","তে","ানো","িয়ে"];
+const NOM_SUF = ["গুলোরই","গুলোরও","গুলিরই","গুলোতে","গুলিতে","গুলোর","গুলির","গুলোকে","গুলিকে","গুলো","গুলি","গুলা","দেরকে","দের","সমূহের","সমূহকে","সমূহে","সমূহ","খানাকে","খানাতে","খানায়","খানার","খানা","খানি","টাকে","টাতে","টার","টা","টিকে","টিতে","টির","টি","টুকু","য়ের","ের","র","কে","রে","তে","এতে","য়ে","য়","ে"];
+
+function analyzeMorphWord(raw) {
+  const word = toBanglaCanonical(raw).replace(/[।,!?;:'"()]/g, "");
+  if (!word || !/^[\u0980-\u09FF]+$/.test(word)) return null;
+  let cur = word, suffixes = [], isVerb = false;
+  if (cur.endsWith("ই") && cur.length > 3 && NOM_SUF.some(s => cur.slice(0, -1).endsWith(s))) {
+    suffixes.unshift("ই (EMP)"); cur = cur.slice(0, -1);
+  }
+  for (const vs of VERB_SUF) {
+    if (cur.endsWith(vs) && cur.length > vs.length) {
+      const st = cur.slice(0, -vs.length);
+      if (!st.endsWith("\u09CD") && (IRR_VERBS[st] || Array.from(st).length >= 2)) {
+        suffixes.unshift(vs + " (ক্রিয়া)"); cur = st; isVerb = true; break;
+      }
+    }
+  }
+  if (!isVerb) {
+    for (let pass = 0; pass < 2; pass++) {
+      let hit = false;
+      for (const ns of NOM_SUF) {
+        if (cur.endsWith(ns) && cur.length > ns.length) {
+          const st = cur.slice(0, -ns.length);
+          if (!st.endsWith("\u09CD") && (ns.length >= 2 || Array.from(st).length >= 3)) {
+            suffixes.unshift(ns + " (বিভক্তি)"); cur = st; hit = true; break;
+          }
+        }
+      }
+      if (!hit) break;
+    }
+  }
+  const lemma = IRR_VERBS[cur] || (isVerb ? cur + "া" : cur);
+  return { word, root: cur, lemma, suffixes, pos: isVerb ? "ক্রিয়া" : (suffixes.length ? "নামপদ" : "মূল পদ") };
+}
+
+function runLiveMorphology() {
+  const tokens = document.getElementById("morph-input").value.trim().split(/\s+/);
+  const out = document.getElementById("morph-output");
+  out.innerHTML = tokens.map(t => {
+    const r = analyzeMorphWord(t);
+    if (!r) return "";
+    return `<div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div><span class="font-bold text-white text-sm">${r.word}</span> <span class="text-slate-500">→</span> <span class="text-emerald-400 font-bold">মূল: ${r.lemma}</span></div>
+      <div class="flex items-center gap-1.5 flex-wrap">
+        ${r.suffixes.map(s => `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">+${s}</span>`).join("")}
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">${r.pos}</span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function runUnicodeDoctor(mode) {
+  const val = document.getElementById("doctor-input").value;
+  const fixed = mode === "bijoy" ? bijoyToUnicode(val) : toBanglaCanonical(val);
+  document.getElementById("doctor-output").textContent = fixed;
+}
+
+// ========== STATE & DATA LOADING ==========
+let STATS = null, MORPH_DATA = [], IDIOMS_DATA = [], HOMOS_DATA = null, ETYM_DATA = [], OCR_DATA = null, EVAL_DATA = [];
+let CURRENT_ETYM_ORIGIN = "all", QUIZ_SCORE = 0, QUIZ_TOTAL = 0, CURRENT_QUIZ = null;
+
+function switchTab(name) {
+  for (const id of ["morph", "idioms", "etym", "ocr", "eval", "sdk", "contribute"]) {
+    document.getElementById("panel-" + id).classList.toggle("hidden", id !== name);
+    document.getElementById("tab-" + id).classList.toggle("active", id === name);
+  }
+  if (name === "idioms" && !IDIOMS_DATA.length) loadIdiomsTab();
+  if (name === "etym" && !ETYM_DATA.length) loadEtymologyTab();
+  if (name === "ocr" && !OCR_DATA) loadOcrTab();
+  if (name === "eval" && !EVAL_DATA.length) loadEvalTab();
+}
+
+async function init() {
+  runLiveMorphology();
+  try {
+    STATS = await (await fetch("dist/stats.json")).json();
+    document.getElementById("stat-morph-words").textContent = STATS.morphology.analyzed_inflected_words.toLocaleString();
+    document.getElementById("stat-morph-roots").textContent = STATS.morphology.root_families.toLocaleString();
+    document.getElementById("stat-idioms").textContent = STATS.idioms_proverbs.total_entries.toLocaleString();
+    document.getElementById("stat-etym").textContent = STATS.etymology.total_tagged_words.toLocaleString();
+    document.getElementById("stat-ocr").textContent = `${STATS.ocr.conjuncts} / ${STATS.ocr.sample_words.toLocaleString()}`;
+    document.getElementById("stat-eval").textContent = STATS.eval_suite.total_benchmark_tasks.toLocaleString();
+  } catch (e) { console.error(e); }
+
+  try {
+    MORPH_DATA = await (await fetch("dist/morphology/bangla_root_families.json")).json();
+    renderRootFamilies();
+  } catch (e) { console.error(e); }
+
+  const params = new URLSearchParams(location.search);
+  const tab = params.get("tab");
+  if (tab && document.getElementById("panel-" + tab)) switchTab(tab);
+}
+
+function renderRootFamilies() {
+  const q = toBanglaCanonical(document.getElementById("root-search").value);
+  const list = (q ? MORPH_DATA.filter(x => x.lemma.includes(q) || x.root.includes(q)) : MORPH_DATA).slice(0, 18);
+  document.getElementById("root-families-grid").innerHTML = list.map(f => `
+    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-2 text-xs">
+      <div class="flex items-center justify-between">
+        <span class="font-black text-emerald-400 text-sm">${f.lemma}</span>
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">${f.inflectionCount} রূপ</span>
+      </div>
+      <div class="flex flex-wrap gap-1">
+        ${f.inflections.slice(0, 8).map(inf => `<span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">${inf.word}</span>`).join("")}
+      </div>
+    </div>
+  `).join("");
+}
+
+// ========== TAB 2: IDIOMS & QUIZ ==========
+async function loadIdiomsTab() {
+  const [idioms, homos] = await Promise.all([
+    fetch("dist/idioms-proverbs/idioms_proverbs.json").then(r => r.json()),
+    fetch("dist/idioms-proverbs/homophones_oneword.json").then(r => r.json())
+  ]);
+  IDIOMS_DATA = idioms;
+  HOMOS_DATA = homos;
+  renderIdioms();
+  renderHomophones();
+  nextQuizQuestion();
+}
+
+function renderIdioms() {
+  const q = toBanglaCanonical(document.getElementById("idiom-search").value).toLowerCase();
+  const tp = document.getElementById("idiom-type").value;
+  const filtered = IDIOMS_DATA.filter(x =>
+    (tp === "all" || x.type === tp) &&
+    (!q || x.phrase.toLowerCase().includes(q) || x.meanings_bn.some(m => m.includes(q)) || x.meanings_en.some(m => m.toLowerCase().includes(q)))
+  ).slice(0, 60);
+  document.getElementById("idioms-list").innerHTML = filtered.map(x => `
+    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1 text-xs">
+      <div class="flex items-center justify-between gap-2">
+        <span class="font-black text-amber-300 text-sm">${x.phrase}</span>
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 uppercase text-[10px]">${x.type}</span>
+      </div>
+      ${x.meanings_bn.length ? `<div class="text-slate-200">${x.meanings_bn.join(" • ")}</div>` : ""}
+      ${x.meanings_en.length ? `<div class="text-cyan-300">${x.meanings_en.join(" • ")}</div>` : ""}
+    </div>
+  `).join("") || `<div class="text-xs text-slate-400">কোনো মিল পাওয়া যায়নি।</div>`;
+}
+
+function renderHomophones() {
+  if (!HOMOS_DATA) return;
+  document.getElementById("homophones-list").innerHTML = HOMOS_DATA.homophones.map(h => `
+    <div class="bg-slate-950 border border-slate-800 rounded-lg p-2">
+      <div><strong class="text-emerald-400">${h.a}</strong>: <span class="text-slate-300">${h.a_meaning}</span></div>
+      <div><strong class="text-cyan-400">${h.b}</strong>: <span class="text-slate-300">${h.b_meaning}</span></div>
+    </div>
+  `).join("");
+}
+
+function nextQuizQuestion() {
+  if (!HOMOS_DATA) return;
+  document.getElementById("quiz-feedback").textContent = "";
+  const useOneWord = Math.random() > 0.5;
+  let qText = "", correct = "", opts = [];
+  if (useOneWord) {
+    const pool = [...HOMOS_DATA.one_word_substitutions].sort(() => Math.random() - 0.5);
+    const pick = pool[0];
+    qText = `এক কথায় প্রকাশ করুন: "${pick.phrase}"`;
+    correct = pick.word;
+    opts = [pick.word, pool[1].word, pool[2].word, pool[3].word].sort(() => Math.random() - 0.5);
+  } else {
+    const pool = [...HOMOS_DATA.homophones].sort(() => Math.random() - 0.5);
+    const pick = pool[0];
+    qText = `কোন শব্দটির অর্থ "${pick.b_meaning}"?`;
+    correct = pick.b;
+    opts = [pick.a, pick.b, pool[1].a, pool[2].b].sort(() => Math.random() - 0.5);
+  }
+  CURRENT_QUIZ = { correct, answered: false };
+  document.getElementById("quiz-question").textContent = qText;
+  document.getElementById("quiz-options").innerHTML = opts.map(o => `
+    <button onclick="answerQuiz(this, '${o.replace(/'/g, "\\'")}')" class="w-full text-left px-3 py-2 rounded-lg bg-slate-950 hover:bg-slate-800 border border-slate-700 text-xs text-white transition">${o}</button>
+  `).join("");
+}
+
+function answerQuiz(btn, choice) {
+  if (!CURRENT_QUIZ || CURRENT_QUIZ.answered) return;
+  CURRENT_QUIZ.answered = true;
+  QUIZ_TOTAL++;
+  if (choice === CURRENT_QUIZ.correct) {
+    QUIZ_SCORE++;
+    btn.classList.add("border-emerald-400", "bg-emerald-950");
+    document.getElementById("quiz-feedback").innerHTML = `<span class="text-emerald-400 font-bold">✅ সঠিক উত্তর!</span>`;
+  } else {
+    btn.classList.add("border-rose-500", "bg-rose-950");
+    document.getElementById("quiz-feedback").innerHTML = `<span class="text-rose-400 font-bold">❌ ভুল। সঠিক উত্তর: ${CURRENT_QUIZ.correct}</span>`;
+  }
+  document.getElementById("quiz-score").textContent = `স্কোর: ${QUIZ_SCORE}/${QUIZ_TOTAL}`;
+}
+
+// ========== TAB 3: ETYMOLOGY ==========
+async function loadEtymologyTab() {
+  ETYM_DATA = await fetch("dist/etymology/bangla_etymology.json").then(r => r.json());
+  const origins = [
+    ["all", "সকল উৎস (৬,১০১)"],
+    ["sanskrit", "সংস্কৃত / তৎসম (৩,৮০৩)"],
+    ["persian", "ফারসি (১,১৫৫)"],
+    ["arabic", "আরবি (৯৭১)"],
+    ["english", "ইংরেজি (৬১৭)"],
+    ["prakrit", "প্রাকৃত / তদ্ভব (৪২১)"],
+    ["hindi_urdu", "হিন্দি / উর্দু (১২২)"],
+    ["portuguese", "পর্তুগিজ (৬১)"]
+  ];
+  document.getElementById("etym-filter-pills").innerHTML = origins.map(([k, lbl]) => `
+    <button onclick="setEtymFilter('${k}')" id="ef-${k}" class="px-3 py-1 rounded-full ${k === "all" ? "bg-indigo-600 text-white" : "bg-slate-800 text-slate-300"} font-bold transition">${lbl}</button>
+  `).join("");
+  renderEtymology();
+}
+
+function setEtymFilter(origin) {
+  CURRENT_ETYM_ORIGIN = origin;
+  document.querySelectorAll("#etym-filter-pills button").forEach(b => {
+    b.className = b.id === "ef-" + origin
+      ? "px-3 py-1 rounded-full bg-indigo-600 text-white font-bold transition"
+      : "px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-bold transition";
+  });
+  renderEtymology();
+}
+
+function renderEtymology() {
+  const q = toBanglaCanonical(document.getElementById("etym-search").value).toLowerCase();
+  const filtered = ETYM_DATA.filter(e =>
+    (CURRENT_ETYM_ORIGIN === "all" || e.origins.includes(CURRENT_ETYM_ORIGIN)) &&
+    (!q || e.word.includes(q) || (e.hindi_cognate && e.hindi_cognate.includes(q)) || e.english.some(m => m.toLowerCase().includes(q)))
+  ).slice(0, 60);
+  document.getElementById("etym-grid").innerHTML = filtered.map(e => `
+    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5 text-xs">
+      <div class="flex items-center justify-between gap-2">
+        <span class="font-black text-white text-base">${e.word}</span>
+        ${e.hindi_cognate ? `<span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 border border-amber-500/30">🇮🇳 ${e.hindi_cognate}</span>` : ""}
+      </div>
+      <div class="flex flex-wrap gap-1">${e.origin_labels.map(l => `<span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[10px]">${l}</span>`).join("")}</div>
+      ${e.english.length ? `<div class="text-emerald-300">${e.english.join(", ")}</div>` : ""}
+    </div>
+  `).join("");
+}
+
+// ========== TAB 4: SYNTHETIC OCR GENERATOR + MINIMAL PURE JS ZIP ==========
+let OCR_FONTS = [];
+async function loadOcrTab() {
+  OCR_DATA = await fetch("dist/ocr/ocr_corpus.json").then(r => r.json());
+  OCR_FONTS = OCR_DATA.recommended_open_fonts.map(f => f.family);
+  renderOcrPreviewGrid();
+}
+
+async function loadCustomOcrFonts(ev) {
+  const files = Array.from(ev.target.files || []);
+  let loaded = 0;
+  for (const file of files) {
+    const family = "CustomFont_" + file.name.replace(/[^a-zA-Z0-9]/g, "_");
+    const buf = await file.arrayBuffer();
+    const face = new FontFace(family, buf);
+    await face.load();
+    document.fonts.add(face);
+    OCR_FONTS.unshift(`'${family}', sans-serif`);
+    loaded++;
+  }
+  document.getElementById("ocr-font-status").textContent = `${loaded}টি কাস্টম ফন্ট যুক্ত হয়েছে (মোট ${OCR_FONTS.length}টি সক্রিয়)।`;
+  renderOcrPreviewGrid();
+}
+
+function getOcrSamples(count) {
+  const src = document.getElementById("ocr-source").value;
+  const pool = src === "conjuncts" ? OCR_DATA.conjuncts : (src === "pangrams" ? OCR_DATA.pangrams : OCR_DATA.sample_words);
+  const res = [];
+  for (let i = 0; i < count; i++) {
+    res.push(pool[Math.floor(Math.random() * pool.length)]);
+  }
+  return res;
+}
+
+function drawOcrCanvas(text, fontFamily, fontSize, maxRot, noiseLevel) {
+  const canvas = document.createElement("canvas");
+  const w = Math.max(260, text.length * fontSize * 0.72 + 60);
+  const h = Math.round(fontSize * 2.4 + 24);
+  canvas.width = Math.min(w, 960);
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  const bgShade = 235 + Math.floor(Math.random() * 20);
+  ctx.fillStyle = `rgb(${bgShade},${bgShade - 2},${bgShade - 6})`;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Subtle grain
+  const grainCount = noiseLevel === "high" ? 900 : (noiseLevel === "med" ? 320 : 60);
+  ctx.fillStyle = "rgba(80,80,80,0.18)";
+  for (let i = 0; i < grainCount; i++) {
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 1.5, 1.5);
+  }
+
+  ctx.save();
+  ctx.translate(canvas.width / 2, canvas.height / 2);
+  const angle = ((Math.random() * 2 - 1) * maxRot * Math.PI) / 180;
+  ctx.rotate(angle);
+  if (noiseLevel === "high") ctx.filter = "blur(0.45px)";
+  ctx.font = `${fontSize}px ${fontFamily}`;
+  ctx.fillStyle = `rgb(${10 + Math.floor(Math.random() * 35)}, ${10 + Math.floor(Math.random() * 35)}, ${15 + Math.floor(Math.random() * 35)})`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(text, 0, 2);
+  ctx.restore();
+  return canvas;
+}
+
+function renderOcrPreviewGrid() {
+  if (!OCR_DATA) return;
+  const sz = Number(document.getElementById("ocr-size").value) || 38;
+  const rot = Number(document.getElementById("ocr-rot").value) || 4;
+  const noise = document.getElementById("ocr-noise").value;
+  const samples = getOcrSamples(9);
+  const grid = document.getElementById("ocr-preview-grid");
+  grid.innerHTML = "";
+  samples.forEach((txt, i) => {
+    const font = OCR_FONTS[i % OCR_FONTS.length];
+    const canvas = drawOcrCanvas(txt, font, sz, rot, noise);
+    canvas.className = "w-full rounded-lg border border-slate-700 bg-white";
+    const card = document.createElement("div");
+    card.className = "bg-slate-950 border border-slate-800 rounded-xl p-2.5 space-y-1.5 text-xs";
+    card.appendChild(canvas);
+    const meta = document.createElement("div");
+    meta.className = "flex justify-between text-[11px] text-slate-400";
+    meta.innerHTML = `<span class="text-emerald-300 font-bold">${txt}</span><span>${font.split(",")[0].replace(/'/g, "")}</span>`;
+    card.appendChild(meta);
+    grid.appendChild(card);
+  });
+}
+
+// Pure JS Store-only CRC32 ZIP builder (zero CDN dependency)
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+function crc32(bytes) {
+  let c = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+function buildZip(files) {
+  const enc = new TextEncoder();
+  const localParts = [], centralParts = [];
+  let offset = 0;
+  for (const f of files) {
+    const nameBytes = enc.encode(f.name);
+    const data = f.data;
+    const crc = crc32(data);
+    const lh = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(8, 0, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, data.length, true); lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameBytes.length, true); lh.set(nameBytes, 30);
+    localParts.push(lh, data);
+
+    const ch = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(ch.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint32(16, crc, true); cv.setUint32(20, data.length, true); cv.setUint32(24, data.length, true);
+    cv.setUint16(28, nameBytes.length, true); cv.setUint32(42, offset, true); ch.set(nameBytes, 46);
+    centralParts.push(ch);
+    offset += lh.length + data.length;
+  }
+  let cdSize = centralParts.reduce((s, a) => s + a.length, 0);
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, offset, true);
+  return new Blob([...localParts, ...centralParts, eocd], { type: "application/zip" });
+}
+
+async function downloadOcrZip() {
+  if (!OCR_DATA) return;
+  const count = Math.min(300, Math.max(5, Number(document.getElementById("ocr-count").value) || 30));
+  const sz = Number(document.getElementById("ocr-size").value) || 38;
+  const rot = Number(document.getElementById("ocr-rot").value) || 4;
+  const noise = document.getElementById("ocr-noise").value;
+  const samples = getOcrSamples(count);
+  const files = [];
+  const tsvLines = ["filename\tground_truth\tfont"];
+  const prog = document.getElementById("ocr-progress");
+  prog.textContent = `জেনারেট হচ্ছে: 0/${count}...`;
+
+  for (let i = 0; i < samples.length; i++) {
+    const txt = samples[i];
+    const font = OCR_FONTS[i % OCR_FONTS.length];
+    const canvas = drawOcrCanvas(txt, font, sz, rot, noise);
+    const blob = await new Promise(res => canvas.toBlob(res, "image/png"));
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    const fname = `images/sample_${String(i + 1).padStart(4, "0")}.png`;
+    files.push({ name: fname, data: bytes });
+    tsvLines.push(`${fname}\t${txt}\t${font.split(",")[0].replace(/'/g, "")}`);
+    if ((i + 1) % 10 === 0) prog.textContent = `জেনারেট হচ্ছে: ${i + 1}/${count}...`;
+  }
+  const enc = new TextEncoder();
+  files.push({ name: "labels.tsv", data: enc.encode(tsvLines.join("\n")) });
+  const zipBlob = buildZip(files);
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(zipBlob);
+  a.download = `bangla_synthetic_ocr_${count}_samples.zip`;
+  a.click();
+  prog.textContent = `✅ সম্পন্ন! ${count}টি PNG ইমেজ + labels.tsv ডাউনলোড হয়েছে।`;
+}
+
+// ========== TAB 5: EVAL SUITE ==========
+async function loadEvalTab() {
+  EVAL_DATA = await fetch("dist/eval-suite/bangla_eval_benchmark.json").then(r => r.json());
+  renderEvalTasks();
+}
+function renderEvalTasks() {
+  const cat = document.getElementById("eval-cat").value;
+  const list = (cat === "all" ? EVAL_DATA : EVAL_DATA.filter(x => x.category === cat)).slice(0, 50);
+  document.getElementById("eval-list").innerHTML = list.map(t => `
+    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-1">
+      <div class="flex justify-between text-[11px]"><span class="mono text-cyan-400 font-bold">${t.id}</span><span class="text-slate-400">${t.category}</span></div>
+      <div class="text-slate-200">${t.prompt_bn}</div>
+      <div class="text-emerald-400 font-bold">Expected: ${t.expected}</div>
+    </div>
+  `).join("");
+}
+function copyEvalPrompts() {
+  const cat = document.getElementById("eval-cat").value;
+  const list = (cat === "all" ? EVAL_DATA : EVAL_DATA.filter(x => x.category === cat)).slice(0, 10);
+  navigator.clipboard.writeText(list.map(t => `[${t.id}] ${t.prompt_bn}`).join("\n"));
+  document.getElementById("eval-copy-msg").textContent = "✅ ১০টি বেঞ্চমার্ক প্রম্পট কপি হয়েছে!";
+}
+
+// ========== TAB 7: NO-CODE CONTRIBUTION PORTAL ==========
+function buildIssuePayload() {
+  const repo = document.getElementById("contrib-repo").value;
+  const kind = document.getElementById("contrib-kind").value;
+  const term = document.getElementById("contrib-term").value.trim();
+  const meaning = document.getElementById("contrib-meaning").value.trim();
+  const source = document.getElementById("contrib-source").value.trim();
+  const title = `[${kind}] ${term || "New Contribution"}`;
+  const body = `## অবদান / সংশোধনের বিবরণ\n- **ধরন:** ${kind}\n- **শব্দ / বাগধারা:** ${term}\n- **অর্থ / সংশোধন:** ${meaning || "N/A"}\n- **তথ্যসূত্র:** ${source || "Community Submission"}\n\n_Submitted via Open Bangla No-Code Portal_`;
+  return { repo, title, body };
+}
+function submitNoCodeIssue() {
+  const { repo, title, body } = buildIssuePayload();
+  if (!document.getElementById("contrib-term").value.trim()) {
+    document.getElementById("contrib-status").textContent = "অনুগ্রহ করে শব্দ বা বাগধারার ঘরটি পূরণ করুন।";
+    return;
+  }
+  const url = `https://github.com/mohammadgolamrabbii/${repo}/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+  window.open(url, "_blank");
+  document.getElementById("contrib-status").textContent = "✅ GitHub Issue ফর্ম নতুন ট্যাবে ওপেন হয়েছে!";
+}
+function copyContributionMarkdown() {
+  const { body } = buildIssuePayload();
+  navigator.clipboard.writeText(body);
+  document.getElementById("contrib-status").textContent = "✅ Markdown ফরম্যাট কপি হয়েছে!";
+}
+
+init();
+</script>
+</body>
+</html>

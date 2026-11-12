@@ -1,0 +1,63 @@
+{
+  "title": "Open Bangla NLP & AI Suite",
+  "morphology": {
+    "analyzed_inflected_words": 218414,
+    "root_families": 30752,
+    "web_preview_families": 3000
+  },
+  "idioms_proverbs": {
+    "total_entries": 5445,
+    "with_bangla_meanings": 4883,
+    "homophone_pairs": 36,
+    "one_word_substitutions": 24
+  },
+  "etymology": {
+    "total_tagged_words": 6101,
+    "by_origin": {
+      "sanskrit": {
+        "label": "Sanskrit (তৎসম / সংস্কৃত উদ্ভূত)",
+        "count": 3803
+      },
+      "prakrit": {
+        "label": "Prakrit / Tadbhava (প্রাকৃত / তদ্ভব)",
+        "count": 421
+      },
+      "arabic": {
+        "label": "Arabic (আরবি)",
+        "count": 971
+      },
+      "persian": {
+        "label": "Persian (ফারসি)",
+        "count": 1155
+      },
+      "english": {
+        "label": "English (ইংরেজি)",
+        "count": 617
+      },
+      "portuguese": {
+        "label": "Portuguese (পর্তুগিজ)",
+        "count": 61
+      },
+      "hindi_urdu": {
+        "label": "Hindi / Urdu (হিন্দি / উর্দু)",
+        "count": 122
+      }
+    }
+  },
+  "ocr": {
+    "conjuncts": 160,
+    "sample_words": 5000
+  },
+  "eval_suite": {
+    "total_benchmark_tasks": 460,
+    "categories": {
+      "orthography_nfc": 100,
+      "morphology_lemma": 100,
+      "idioms_proverbs": 100,
+      "homophones_grammar": 60,
+      "bilingual_cognates": 100
+    }
+  },
+  "license": "GPL-3.0",
+  "generated_at": "2026-11-12T07:31:54.853Z"
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@open-bangla/lexicon-core",
+  "version": "1.0.0",
+  "description": "Fast prefix/chunked loader and fuzzy spell-suggestion utilities for Open-Bangla's 495,209-word verified NFC Bangla lexicon.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "bangla",
+    "bengali",
+    "lexicon",
+    "dictionary",
+    "spellchecker",
+    "nlp"
+  ],
+  "author": "Mohammad Golamrabbii",
+  "license": "GPL-3.0"
+}

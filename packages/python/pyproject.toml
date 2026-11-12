@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "open-bangla-nlp"
+version = "1.0.0"
+description = "Zero-dependency canonical NFC normalizer (য়/ড়/ঢ়), Bangla morphological stemmer/lemmatizer, and Open Lexicon utilities."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "GPL-3.0"}
+authors = [{name = "Mohammad Golamrabbii"}]
+keywords = ["bangla", "bengali", "nlp", "stemmer", "lemmatizer", "unicode"]
+
+[project.urls]
+Homepage = "https://github.com/mohammadgolamrabbii/Open-Bangla-NLP-Suite"
+Lexicon = "https://mohammadgolamrabbii.github.io/Bangla-Lexicon-Mega-Archive/"

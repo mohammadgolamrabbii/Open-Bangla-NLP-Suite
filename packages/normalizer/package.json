@@ -1,0 +1,21 @@
+{
+  "name": "@open-bangla/normalizer",
+  "version": "1.0.0",
+  "description": "Zero-dependency canonical Unicode NFC normalizer (fixing য়/ড়/ঢ় precomposition), sanitizer, and Bijoy/ANSI <-> Unicode converter for Bangla.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "bangla",
+    "bengali",
+    "unicode",
+    "nfc",
+    "bijoy",
+    "normalizer",
+    "nlp"
+  ],
+  "author": "Mohammad Golamrabbii",
+  "license": "GPL-3.0"
+}

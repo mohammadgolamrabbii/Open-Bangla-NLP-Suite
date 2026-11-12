@@ -1,0 +1,19 @@
+{
+  "name": "@open-bangla/stemmer",
+  "version": "1.0.0",
+  "description": "Lexicon-aware Bangla morphological analyzer, stemmer, and lemmatizer supporting nominal case endings, plural classifiers, verbal conjugations, prefixes, and irregular roots.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "bangla",
+    "bengali",
+    "stemmer",
+    "lemmatizer",
+    "morphology",
+    "nlp"
+  ],
+  "author": "Mohammad Golamrabbii",
+  "license": "GPL-3.0"
+}
